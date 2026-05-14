@@ -7,14 +7,8 @@ using ReadWriteApp.Services.Interfaces;
 
 namespace ReadWriteApp.Services
 {
-    /// <summary>
-    /// Сервис для работы с авторами (через SQLite)
-    /// </summary>
     public class AuthorService : IAuthorService
     {
-        /// <summary>
-        /// Находит автора по его идентификатору
-        /// </summary>
         public Author? GetAuthorById(int id)
         {
             using var connection = new SqliteConnection(DatabaseHelper.ConnectionString);
@@ -39,9 +33,6 @@ namespace ReadWriteApp.Services
             return null;
         }
 
-        /// <summary>
-        /// Возвращает список всех авторов
-        /// </summary>
         public List<Author> GetAllAuthors()
         {
             var authors = new List<Author>();
@@ -67,9 +58,6 @@ namespace ReadWriteApp.Services
             return authors;
         }
 
-        /// <summary>
-        /// Обновляет данные автора (имя, фамилия, биография)
-        /// </summary>
         public void UpdateAuthor(int id, string firstName, string lastName, string bio)
         {
             using var connection = new SqliteConnection(DatabaseHelper.ConnectionString);
@@ -77,8 +65,8 @@ namespace ReadWriteApp.Services
 
             var cmd = connection.CreateCommand();
             cmd.CommandText = @"
-                UPDATE Authors 
-                SET FirstName = @fn, LastName = @ln, Bio = @bio 
+                UPDATE Authors
+                SET FirstName = @fn, LastName = @ln, Bio = @bio
                 WHERE Id = @id";
             cmd.Parameters.AddWithValue("@id", id);
             cmd.Parameters.AddWithValue("@fn", firstName?.Trim() ?? "");

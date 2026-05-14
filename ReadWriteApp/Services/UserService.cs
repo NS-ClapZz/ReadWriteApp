@@ -6,15 +6,8 @@ using ReadWriteApp.Services.Interfaces;
 
 namespace ReadWriteApp.Services
 {
-    /// <summary>
-    /// Сервис для работы с пользователями (через SQLite)
-    /// </summary>
     public class UserService : IUserService
     {
-        /// <summary>
-        /// Регистрирует нового пользователя в системе
-        /// </summary>
-        /// <returns>true, если регистрация прошла успешно; false, если логин уже занят</returns>
         public bool Register(string login, string password, UserRole role)
         {
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
@@ -23,7 +16,6 @@ namespace ReadWriteApp.Services
             using var connection = new SqliteConnection(DatabaseHelper.ConnectionString);
             connection.Open();
 
-            // Проверяем, не занят ли логин
             var checkCmd = connection.CreateCommand();
             checkCmd.CommandText = "SELECT COUNT(*) FROM Users WHERE Login = @login COLLATE NOCASE";
             checkCmd.Parameters.AddWithValue("@login", login.Trim());
@@ -34,7 +26,6 @@ namespace ReadWriteApp.Services
 
             int? authorId = null;
 
-            // Если пользователь регистрируется как автор, создаём запись автора
             if (role == UserRole.Author)
             {
                 var authorCmd = connection.CreateCommand();
@@ -48,7 +39,6 @@ namespace ReadWriteApp.Services
                 authorId = Convert.ToInt32(authorCmd.ExecuteScalar()!);
             }
 
-            // Создаём пользователя
             var userCmd = connection.CreateCommand();
             userCmd.CommandText = "INSERT INTO Users (Login, Password, Role, AuthorId) VALUES (@login, @password, @role, @authorId)";
             userCmd.Parameters.AddWithValue("@login", login.Trim());
@@ -60,10 +50,6 @@ namespace ReadWriteApp.Services
             return true;
         }
 
-        /// <summary>
-        /// Авторизует пользователя по логину и паролю
-        /// </summary>
-        /// <returns>true, если авторизация успешна; false, если логин или пароль неверные</returns>
         public bool Login(string login, string password)
         {
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
@@ -96,17 +82,11 @@ namespace ReadWriteApp.Services
             return false;
         }
 
-        /// <summary>
-        /// Выполняет выход пользователя из системы
-        /// </summary>
         public void Logout()
         {
             DataStore.CurrentUser = null;
         }
 
-        /// <summary>
-        /// Возвращает текущего авторизованного пользователя
-        /// </summary>
         public User? GetCurrentUser()
         {
             return DataStore.CurrentUser;

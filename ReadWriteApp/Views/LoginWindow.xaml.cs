@@ -5,9 +5,6 @@ using ReadWriteApp.Services.Interfaces;
 
 namespace ReadWriteApp.Views
 {
-    /// <summary>
-    /// Окно авторизации и регистрации пользователей
-    /// </summary>
     public partial class LoginWindow : Window
     {
         private readonly IUserService _userService;
@@ -18,9 +15,6 @@ namespace ReadWriteApp.Views
             _userService = new UserService();
         }
 
-        /// <summary>
-        /// Обработчик нажатия кнопки "Войти"
-        /// </summary>
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string login = LoginTextBox.Text.Trim();
@@ -36,7 +30,6 @@ namespace ReadWriteApp.Views
 
             if (success)
             {
-                // Открываем главное окно и закрываем окно входа
                 var mainWindow = new MainWindow();
                 mainWindow.Show();
                 this.Close();
@@ -47,9 +40,6 @@ namespace ReadWriteApp.Views
             }
         }
 
-        /// <summary>
-        /// Обработчик нажатия кнопки "Зарегистрироваться"
-        /// </summary>
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
             string login = LoginTextBox.Text.Trim();
@@ -67,14 +57,12 @@ namespace ReadWriteApp.Views
                 return;
             }
 
-            // Определяем роль по выбранному пункту ComboBox
             UserRole role = RoleComboBox.SelectedIndex == 1 ? UserRole.Author : UserRole.Reader;
 
             bool success = _userService.Register(login, password, role);
 
             if (success)
             {
-                // Автоматически входим после регистрации
                 _userService.Login(login, password);
                 var mainWindow = new MainWindow();
                 mainWindow.Show();

@@ -7,9 +7,6 @@ using ReadWriteApp.Services.Interfaces;
 
 namespace ReadWriteApp.Views
 {
-    /// <summary>
-    /// Окно просмотра подробной информации о книге
-    /// </summary>
     public partial class BookDetailsWindow : Window
     {
         private readonly IBookService _bookService;
@@ -27,9 +24,6 @@ namespace ReadWriteApp.Views
             CheckEditPermissions();
         }
 
-        /// <summary>
-        /// Загружает и отображает данные книги
-        /// </summary>
         private void LoadBookDetails()
         {
             BookTitle.Text = _book.Title;
@@ -38,29 +32,21 @@ namespace ReadWriteApp.Views
             BookContent.Text = _book.Content;
             PublishDate.Text = $"Опубликовано: {_book.PublishedDate:dd.MM.yyyy}";
 
-            // Получаем имя автора
             var author = _authorService.GetAuthorById(_book.AuthorId);
             AuthorName.Text = author != null ? $"✍ {author.FullName}" : "Автор неизвестен";
         }
 
-        /// <summary>
-        /// Проверяет, может ли текущий пользователь редактировать книгу
-        /// </summary>
         private void CheckEditPermissions()
         {
             var currentUser = DataStore.CurrentUser;
             if (currentUser != null && currentUser.Role == UserRole.Author
                 && currentUser.AuthorId == _book.AuthorId)
             {
-                // Автор может редактировать и удалять только свои книги
                 EditButton.Visibility = Visibility.Visible;
                 DeleteButton.Visibility = Visibility.Visible;
             }
         }
 
-        /// <summary>
-        /// Обработчик клика по имени автора — открывает профиль
-        /// </summary>
         private void AuthorName_Click(object sender, MouseButtonEventArgs e)
         {
             var author = _authorService.GetAuthorById(_book.AuthorId);
@@ -72,9 +58,6 @@ namespace ReadWriteApp.Views
             }
         }
 
-        /// <summary>
-        /// Обработчик нажатия кнопки "Редактировать"
-        /// </summary>
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
             var editWindow = new AddEditBookWindow(_book);
@@ -83,7 +66,6 @@ namespace ReadWriteApp.Views
 
             if (result == true)
             {
-                // Перезагружаем данные после редактирования
                 var updatedBook = _bookService.GetBookById(_book.Id);
                 if (updatedBook != null)
                 {
@@ -93,9 +75,6 @@ namespace ReadWriteApp.Views
             }
         }
 
-        /// <summary>
-        /// Обработчик нажатия кнопки "Удалить"
-        /// </summary>
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show(
@@ -112,9 +91,6 @@ namespace ReadWriteApp.Views
             }
         }
 
-        /// <summary>
-        /// Обработчик нажатия кнопки "Закрыть"
-        /// </summary>
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();

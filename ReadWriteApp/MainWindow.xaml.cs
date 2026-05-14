@@ -9,9 +9,6 @@ using ReadWriteApp.Views;
 
 namespace ReadWriteApp
 {
-    /// <summary>
-    /// Главное окно приложения — каталог книг
-    /// </summary>
     public partial class MainWindow : Window
     {
         private readonly IBookService _bookService;
@@ -30,9 +27,6 @@ namespace ReadWriteApp
             LoadBooks();
         }
 
-        /// <summary>
-        /// Отображает информацию о текущем пользователе
-        /// </summary>
         private void LoadUserInfo()
         {
             var user = _userService.GetCurrentUser();
@@ -41,7 +35,6 @@ namespace ReadWriteApp
                 string roleName = user.Role == UserRole.Author ? "Автор" : "Читатель";
                 UserInfoText.Text = $"Вы вошли как: {user.Login} ({roleName})";
 
-                // Показываем кнопки, доступные только авторам
                 if (user.Role == UserRole.Author)
                 {
                     AddBookButton.Visibility = Visibility.Visible;
@@ -50,9 +43,6 @@ namespace ReadWriteApp
             }
         }
 
-        /// <summary>
-        /// Заполняет ComboBox жанров
-        /// </summary>
         private void LoadGenres()
         {
             GenreComboBox.Items.Clear();
@@ -66,9 +56,6 @@ namespace ReadWriteApp
             GenreComboBox.SelectedIndex = 0;
         }
 
-        /// <summary>
-        /// Загружает и отображает список книг
-        /// </summary>
         private void LoadBooks()
         {
             string searchQuery = SearchTextBox?.Text ?? "";
@@ -76,13 +63,11 @@ namespace ReadWriteApp
 
             var books = _bookService.GetAllBooks();
 
-            // Применяем поиск
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
                 books = _bookService.SearchBooks(searchQuery);
             }
 
-            // Применяем фильтр по жанру
             if (selectedGenre != "Все жанры" && !string.IsNullOrWhiteSpace(selectedGenre))
             {
                 books = books.Where(b => b.Genres.Contains(selectedGenre)).ToList();
@@ -91,25 +76,16 @@ namespace ReadWriteApp
             BooksListBox.ItemsSource = books;
         }
 
-        /// <summary>
-        /// Обработчик изменения текста в поле поиска
-        /// </summary>
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             LoadBooks();
         }
 
-        /// <summary>
-        /// Обработчик изменения выбора жанра
-        /// </summary>
         private void GenreComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             LoadBooks();
         }
 
-        /// <summary>
-        /// Обработчик двойного клика по книге — открывает подробности
-        /// </summary>
         private void BooksListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (BooksListBox.SelectedItem is Book selectedBook)
@@ -118,29 +94,21 @@ namespace ReadWriteApp
                 detailsWindow.Owner = this;
                 detailsWindow.ShowDialog();
 
-                // После закрытия обновляем список (книга могла быть удалена)
                 LoadGenres();
                 LoadBooks();
             }
         }
 
-        /// <summary>
-        /// Обработчик нажатия кнопки "Добавить книгу"
-        /// </summary>
         private void AddBookButton_Click(object sender, RoutedEventArgs e)
         {
             var addWindow = new AddEditBookWindow();
             addWindow.Owner = this;
             addWindow.ShowDialog();
 
-            // Обновляем список после добавления
             LoadGenres();
             LoadBooks();
         }
 
-        /// <summary>
-        /// Обработчик нажатия кнопки "Профиль"
-        /// </summary>
         private void ProfileButton_Click(object sender, RoutedEventArgs e)
         {
             var user = _userService.GetCurrentUser();
@@ -156,9 +124,6 @@ namespace ReadWriteApp
             }
         }
 
-        /// <summary>
-        /// Обработчик нажатия кнопки "Выйти"
-        /// </summary>
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
             _userService.Logout();

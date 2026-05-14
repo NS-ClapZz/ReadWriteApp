@@ -6,9 +6,6 @@ using ReadWriteApp.Services.Interfaces;
 
 namespace ReadWriteApp.Views
 {
-    /// <summary>
-    /// Окно профиля автора — просмотр и редактирование данных
-    /// </summary>
     public partial class AuthorProfileWindow : Window
     {
         private readonly IAuthorService _authorService;
@@ -26,30 +23,22 @@ namespace ReadWriteApp.Views
             CheckEditPermissions();
         }
 
-        /// <summary>
-        /// Загружает данные автора в форму
-        /// </summary>
         private void LoadAuthorData()
         {
             FirstNameTextBox.Text = _author.FirstName;
             LastNameTextBox.Text = _author.LastName;
             BioTextBox.Text = _author.Bio;
 
-            // Загружаем список книг автора
             var books = _bookService.GetBooksByAuthor(_author.Id);
             AuthorBooksListBox.ItemsSource = books;
         }
 
-        /// <summary>
-        /// Проверяет, может ли текущий пользователь редактировать профиль
-        /// </summary>
         private void CheckEditPermissions()
         {
             var currentUser = DataStore.CurrentUser;
 
             if (currentUser != null && currentUser.AuthorId == _author.Id)
             {
-                // Автор может редактировать свой профиль
                 SaveButton.Visibility = Visibility.Visible;
                 FirstNameTextBox.IsReadOnly = false;
                 LastNameTextBox.IsReadOnly = false;
@@ -57,7 +46,6 @@ namespace ReadWriteApp.Views
             }
             else
             {
-                // Другие пользователи могут только просматривать
                 FirstNameTextBox.IsReadOnly = true;
                 LastNameTextBox.IsReadOnly = true;
                 BioTextBox.IsReadOnly = true;
@@ -67,9 +55,6 @@ namespace ReadWriteApp.Views
             }
         }
 
-        /// <summary>
-        /// Обработчик нажатия кнопки "Сохранить"
-        /// </summary>
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             string firstName = FirstNameTextBox.Text.Trim();
@@ -89,9 +74,6 @@ namespace ReadWriteApp.Views
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        /// <summary>
-        /// Обработчик нажатия кнопки "Закрыть"
-        /// </summary>
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
