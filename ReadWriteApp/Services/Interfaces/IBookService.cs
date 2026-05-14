@@ -11,7 +11,7 @@ namespace ReadWriteApp.Services.Interfaces
         /// <summary>
         /// Добавить новую книгу в каталог
         /// </summary>
-        void AddBook(string title, int authorId, string genre, string description, string content);
+        void AddBook(string title, int authorId, List<string> genres, string description, string content);
 
         /// <summary>
         /// Получить список всех книг
@@ -46,7 +46,7 @@ namespace ReadWriteApp.Services.Interfaces
         /// <summary>
         /// Обновить данные книги
         /// </summary>
-        void UpdateBook(int id, string title, string genre, string description, string content);
+        void UpdateBook(int id, string title, List<string> genres, string description, string content);
 
         /// <summary>
         /// Получить список всех жанров

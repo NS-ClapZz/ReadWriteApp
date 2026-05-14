@@ -66,7 +66,7 @@
                                 <TextBlock Text="{Binding Title}" FontSize="13"
                                            Foreground="#2C3E50"/>
                                 <TextBlock Text=" — " FontSize="13" Foreground="#BDC3C7"/>
-                                <TextBlock Text="{Binding Genre}" FontSize="13"
+                                <TextBlock Text="{Binding GenresDisplay}" FontSize="13"
                                            Foreground="#7F8C8D"/>
                             </StackPanel>
                         </DataTemplate>

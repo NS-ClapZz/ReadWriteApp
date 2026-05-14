@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using Microsoft.Data.Sqlite;
 using ReadWriteApp.Data;
 using ReadWriteApp.Models;
 using ReadWriteApp.Services.Interfaces;
@@ -8,7 +8,7 @@ using ReadWriteApp.Services.Interfaces;
 namespace ReadWriteApp.Services
 {
     /// <summary>
-    /// Сервис для работы с авторами
+    /// Сервис для работы с авторами (через SQLite)
     /// </summary>
     public class AuthorService : IAuthorService
     {
@@ -17,7 +17,26 @@ namespace ReadWriteApp.Services
         /// </summary>
         public Author? GetAuthorById(int id)
         {
-            return DataStore.Authors.FirstOrDefault(a => a.Id == id);
+            using var connection = new SqliteConnection(DatabaseHelper.ConnectionString);
+            connection.Open();
+
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = "SELECT Id, FirstName, LastName, Bio FROM Authors WHERE Id = @id";
+            cmd.Parameters.AddWithValue("@id", id);
+
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                return new Author
+                {
+                    Id = reader.GetInt32(0),
+                    FirstName = reader.GetString(1),
+                    LastName = reader.GetString(2),
+                    Bio = reader.GetString(3)
+                };
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -25,7 +44,27 @@ namespace ReadWriteApp.Services
         /// </summary>
         public List<Author> GetAllAuthors()
         {
-            return DataStore.Authors.ToList();
+            var authors = new List<Author>();
+
+            using var connection = new SqliteConnection(DatabaseHelper.ConnectionString);
+            connection.Open();
+
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = "SELECT Id, FirstName, LastName, Bio FROM Authors ORDER BY Id";
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                authors.Add(new Author
+                {
+                    Id = reader.GetInt32(0),
+                    FirstName = reader.GetString(1),
+                    LastName = reader.GetString(2),
+                    Bio = reader.GetString(3)
+                });
+            }
+
+            return authors;
         }
 
         /// <summary>
@@ -33,13 +72,19 @@ namespace ReadWriteApp.Services
         /// </summary>
         public void UpdateAuthor(int id, string firstName, string lastName, string bio)
         {
-            var author = DataStore.Authors.FirstOrDefault(a => a.Id == id);
-            if (author != null)
-            {
-                author.FirstName = firstName?.Trim() ?? author.FirstName;
-                author.LastName = lastName?.Trim() ?? author.LastName;
-                author.Bio = bio?.Trim() ?? author.Bio;
-            }
+            using var connection = new SqliteConnection(DatabaseHelper.ConnectionString);
+            connection.Open();
+
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = @"
+                UPDATE Authors 
+                SET FirstName = @fn, LastName = @ln, Bio = @bio 
+                WHERE Id = @id";
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@fn", firstName?.Trim() ?? "");
+            cmd.Parameters.AddWithValue("@ln", lastName?.Trim() ?? "");
+            cmd.Parameters.AddWithValue("@bio", bio?.Trim() ?? "");
+            cmd.ExecuteNonQuery();
         }
     }
 }

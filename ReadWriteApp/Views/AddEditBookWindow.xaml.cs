@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using ReadWriteApp.Data;
 using ReadWriteApp.Models;
 using ReadWriteApp.Services;
@@ -22,6 +25,8 @@ namespace ReadWriteApp.Views
             InitializeComponent();
             _bookService = new BookService();
             _editingBook = null;
+
+            LoadGenresList();
         }
 
         /// <summary>
@@ -35,9 +40,37 @@ namespace ReadWriteApp.Views
 
             // Заполняем поля данными книги
             TitleTextBox.Text = book.Title;
-            GenreComboBox.Text = book.Genre;
             DescriptionTextBox.Text = book.Description;
             ContentTextBox.Text = book.Content;
+
+            // Выделяем жанры, которые уже есть у книги
+            SelectBookGenres(book.Genres);
+        }
+
+        /// <summary>
+        /// Загружает список всех жанров в ListBox
+        /// </summary>
+        private void LoadGenresList()
+        {
+            var genres = _bookService.GetAllGenres();
+            GenresListBox.ItemsSource = genres;
+        }
+
+        /// <summary>
+        /// Выделяет жанры книги в ListBox при редактировании
+        /// </summary>
+        private void SelectBookGenres(List<string> bookGenres)
+        {
+            GenresListBox.SelectedItems.Clear();
+
+            for (int i = 0; i < GenresListBox.Items.Count; i++)
+            {
+                string genre = GenresListBox.Items[i].ToString()!;
+                if (bookGenres.Contains(genre))
+                {
+                    GenresListBox.SelectedItems.Add(GenresListBox.Items[i]);
+                }
+            }
         }
 
         /// <summary>
@@ -46,9 +79,13 @@ namespace ReadWriteApp.Views
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             string title = TitleTextBox.Text.Trim();
-            string genre = GenreComboBox.Text.Trim();
             string description = DescriptionTextBox.Text.Trim();
             string content = ContentTextBox.Text.Trim();
+
+            // Собираем выбранные жанры
+            var selectedGenres = GenresListBox.SelectedItems
+                .Cast<string>()
+                .ToList();
 
             // Валидация обязательных полей
             if (string.IsNullOrWhiteSpace(title))
@@ -57,16 +94,16 @@ namespace ReadWriteApp.Views
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(genre))
+            if (selectedGenres.Count == 0)
             {
-                ErrorText.Text = "Укажите жанр книги";
+                ErrorText.Text = "Выберите хотя бы один жанр";
                 return;
             }
 
             if (_editingBook != null)
             {
                 // Редактирование существующей книги
-                _bookService.UpdateBook(_editingBook.Id, title, genre, description, content);
+                _bookService.UpdateBook(_editingBook.Id, title, selectedGenres, description, content);
             }
             else
             {
@@ -78,7 +115,7 @@ namespace ReadWriteApp.Views
                     return;
                 }
 
-                _bookService.AddBook(title, currentUser.AuthorId.Value, genre, description, content);
+                _bookService.AddBook(title, currentUser.AuthorId.Value, selectedGenres, description, content);
             }
 
             this.DialogResult = true;

@@ -125,7 +125,7 @@
                             <Border Grid.Row="0" Grid.Column="1" 
                                     Background="#EBF5FB" CornerRadius="10"
                                     Padding="10,3" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding Genre}" FontSize="11"
+                                <TextBlock Text="{Binding GenresDisplay}" FontSize="11"
                                            Foreground="#2980B9"/>
                             </Border>
 

@@ -33,7 +33,7 @@ namespace ReadWriteApp.Views
         private void LoadBookDetails()
         {
             BookTitle.Text = _book.Title;
-            BookGenre.Text = _book.Genre;
+            BookGenre.Text = _book.GenresDisplay;
             BookDescription.Text = _book.Description;
             BookContent.Text = _book.Content;
             PublishDate.Text = $"Опубликовано: {_book.PublishedDate:dd.MM.yyyy}";

@@ -85,7 +85,7 @@ namespace ReadWriteApp
             // Применяем фильтр по жанру
             if (selectedGenre != "Все жанры" && !string.IsNullOrWhiteSpace(selectedGenre))
             {
-                books = books.Where(b => b.Genre == selectedGenre).ToList();
+                books = books.Where(b => b.Genres.Contains(selectedGenre)).ToList();
             }
 
             BooksListBox.ItemsSource = books;

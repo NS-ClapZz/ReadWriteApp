@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace ReadWriteApp.Models
 {
@@ -23,9 +24,14 @@ namespace ReadWriteApp.Models
         public int AuthorId { get; set; }
 
         /// <summary>
-        /// Жанр книги
+        /// Список жанров книги
         /// </summary>
-        public string Genre { get; set; } = string.Empty;
+        public List<string> Genres { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Жанры через запятую (для отображения в интерфейсе)
+        /// </summary>
+        public string GenresDisplay => string.Join(", ", Genres);
 
         /// <summary>
         /// Краткое описание книги
